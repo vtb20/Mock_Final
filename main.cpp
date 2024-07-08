@@ -1,27 +1,22 @@
-﻿#include <iostream>
-#include <cctype>
+#include <iostream>
 #include <string>
-#include "Player.h" 
-using namespace std;
-
+#include <vector>
+#include <algorithm>
 #include "Game.h"
 
-
-static void clearScreen() {
-#ifdef _WIN32
-    system("cls");
-#else
-    system("clear");
-#endif
-}
+using namespace std;
 
 static bool isDigit(const string& s) {
-    for (char c : s) {
-        if (!isdigit(c)) {
-            return false;
-        }
-    }
-    return true;
+    return all_of(s.begin(), s.end(), ::isdigit);
+}
+
+
+static void showReplayMenu() {
+    cout << "*--------REPLAY MENU--------*\n";
+    cout << "Press number to choice:\n";
+    cout << "1. Play back an old game\n";
+    cout << "2. View an old game\n";
+    cout << "3. Back to MAIN MENU\n";
 }
 
 static void showMainMenu() {
@@ -31,7 +26,7 @@ static void showMainMenu() {
     cout << "2. Play with BOT\n";
     cout << "3. Replay\n";
     cout << "4. Player's Information\n";
-    cout << "5. Guild\n";
+    cout << "5. Guide\n";
     cout << "6. Exit\n";
 }
 
@@ -43,7 +38,13 @@ static void showSubMenuWBot() {
     cout << "3. Hard Mode\n";
     cout << "4. Back to MAIN MENU\n";
 }
-
+static void showSubMenuReplay() {
+    cout << "*--------Replay--------*\n";
+    cout << "Press number to choice:\n";
+    cout << "1. Replay the old match\n";
+    cout << "2. Watching Replay Game\n";
+    cout << "3. Back to MAIN MENU\n";
+}
 static void displayGuide() {
     cout << "Welcome to the Caro Game Guide!\n\n";
     cout << "Rules of the Game:\n";
@@ -67,7 +68,7 @@ int main() {
     string input1;
 
     while (!exit) {
-        clearScreen();
+        system("cls");
         showMainMenu();
         cin >> input1;
         while (!isDigit(input1) || stoi(input1) < 1 || stoi(input1) > 6) {
@@ -77,14 +78,22 @@ int main() {
 
         switch (stoi(input1)) {
         case 1: {
-            clearScreen();
+            system("cls");
             cout << "Your choice is play with other player!\n";
+            cout << "Or You can enter exit in the name input to back \n"; 
             string name1, name2;
             cout << "Enter name for Player 1 (X): ";
             cin >> name1;
+            if (name1 == "exit")
+            {
+                break;
+            }
             cout << "Enter name for Player 2 (O): ";
             cin >> name2;
-
+            if (name2 == "exit")
+            {
+                break;
+            }
             Player player1(name1, 'X');
             Player player2(name2, 'O');
 
@@ -99,7 +108,7 @@ int main() {
             bool backToMain = false;
 
             while (!backToMain) {
-                clearScreen();
+                system("cls");
                 showSubMenuWBot();
                 cin >> input2;
                 while (!isDigit(input2) || stoi(input2) < 1 || stoi(input2) > 4) {
@@ -109,27 +118,59 @@ int main() {
 
                 switch (stoi(input2)) {
                 case 1:
-                    clearScreen();
+                {
+                    system("cls");
                     cout << "You chose Easy Mode.\n";
+                    cout << "Enter your name: \n";
+                    string playerName;
+                    getline(cin, playerName);
+                    Player player1(playerName, 'X');
+                    Board board;
+                    Bot bot("Easy Bot", 'O', 1, board);  
 
+                    Game game(player1, bot);
+                    game.playVsBot();
                     cin.ignore();
-                    cin.get(); 
+                    cin.get();
                     break;
+                }
                 case 2:
-                    clearScreen();
+                {
+                    system("cls");
                     cout << "You chose Normal Mode.\n";
 
+                    cout << "Enter your name: \n";
+                    string playerName;
+                    getline(cin, playerName);
+                    Player player1(playerName, 'X');
+                    Board board;
+                    Bot bot("Easy Bot", 'O', 2, board);
+
+                    Game game(player1, bot);
+                    game.playVsBot();
                     cin.ignore();
-                    cin.get(); 
+                    cin.get();
                     break;
+                }
                 case 3:
-                    clearScreen();
+                {
+                    system("cls");
                     cout << "You chose Hard Mode.\n";
-                    // Khởi tạo trò chơi với bot khó
+
+                    cout << "Enter your name: \n";
+                    string playerName;
+                    getline(cin, playerName);
+                    Player player1(playerName, 'X');
+                    Board board;
+                    Bot bot("Easy Bot", 'O', 3, board);
+
+                    Game game(player1, bot);
+                    game.playVsBot();
 
                     cin.ignore();
-                    cin.get(); 
+                    cin.get();
                     break;
+                }
                 case 4:
                     backToMain = true;
                     break;
@@ -139,23 +180,47 @@ int main() {
             }
             break;
         }
-        case 3:
-            clearScreen();
-            cout << "Replay\n";
-            // Chơi lại game đấu gần nhất 
-            cin.ignore();
-            cin.get();
+        case 3: {
+            system("cls");
+            bool backToMain = false;
+            string input3;
+            while (!backToMain)
+            {
+                system("cls");
+                showReplayMenu();
+                cin >> input3;
+                while (!isDigit(input3) || stoi(input3) < 1 || stoi(input3) > 3) {
+                    cout << "Wrong input! please try again: " << endl;
+                    cin >> input3;
+                }
+                switch (stoi(input3))
+                {
+                case 1:
+                    system("cls"); 
+                     Game::playReplay();      
+                     break;
+                case 2:
+                    system("cls");
+                    Game::viewReplay();
+                    break;
+                case 3:
+                    backToMain = true;
+                default:
+                    break;
+                }
+            }
             break;
+        }
         case 4:
-            clearScreen();
+            system("cls");
             cout << "Sreaching player's information.\n";
             // Show thông tin player theo tên     
             cin.ignore();
-            cin.get(); 
+            cin.get();
             break;
         case 5:
-            clearScreen();
-             // Show guide hướng dẫn 
+            system("cls");
+            // Show guide hướng dẫn 
             displayGuide();
             cin.ignore();
             cin.get();

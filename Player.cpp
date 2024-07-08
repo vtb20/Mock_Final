@@ -38,7 +38,6 @@ void Player::addDraw(int num) {
     draws += num;
 }
 
-// Make move (for human players, this function should be overridden for bots)
 pair<int, int> Player::makeMove() {
     int x, y;
     while (true) {
@@ -49,7 +48,7 @@ pair<int, int> Player::makeMove() {
         else {
             cout << "Invalid input. Please enter numbers between 0 and 9." << endl;
             cin.clear(); 
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // discard invalid input
         }
     }
     return make_pair(x, y);

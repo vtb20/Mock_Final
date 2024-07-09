@@ -144,7 +144,7 @@ int main() {
                     getline(cin, playerName);
                     Player player1(playerName, 'X');
                     Board board;
-                    Bot bot("Easy Bot", 'O', 2, board);
+                    Bot bot("Normal Bot", 'O', 2, board);
 
                     Game game(player1, bot);
                     game.playVsBot();
@@ -162,7 +162,7 @@ int main() {
                     getline(cin, playerName);
                     Player player1(playerName, 'X');
                     Board board;
-                    Bot bot("Easy Bot", 'O', 3, board);
+                    Bot bot("Hard Bot", 'O', 3, board);
 
                     Game game(player1, bot);
                     game.playVsBot();

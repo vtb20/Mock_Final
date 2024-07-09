@@ -15,6 +15,7 @@ public:
     bool isFull() const;
     bool placeMark(int x, int y, char mark);
     bool checkWin(char mark) const;
+    friend class Bot;
 };
 
 #endif // BOARD_H

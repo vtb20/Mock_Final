@@ -13,36 +13,39 @@ void Board::reset() {
 }
 
 void Board::display() const {
-#ifdef _WIN32
     system("cls");
-#else
-    system("clear");
-#endif
-
+    
     cout << "=> Player 1 = X, Player 2 = O:\n";
     cout << "  ";
+    // In ra các chỉ số cột từ 0 đến 9
     for (int i = 0; i < 10; ++i) {
-        cout << i << " ";
-    }
-    cout << "\n";
+        cout << " " << i;
 
+    }
+    cout << endl;
+    cout << "  +-+-+-+-+-+-+-+-+-+-+";
+    cout << "\n";
+   
     for (int i = 0; i < 10; ++i) {
-        cout << i << " ";
+        cout << i << " " << "|";
         for (int j = 0; j < 10; ++j) {
-           cout << grid[i][j];
-            if (j < 9) cout << "|";
+           cout << grid[i][j] << "|";;
         }
         cout << "\n";
-        if (i < 9) {
+        if (i < 10) {
             cout << "  ";
             for (int j = 0; j < 10; ++j) {
-                cout << "-";
-                if (j < 9) cout << "+";
+                if (j == 0)
+                {
+                    cout << "+";
+                } 
+                cout << "-+";
             }
             cout << "\n";
         }
     }
 }
+
 
 bool Board::isFull() const {
     for (int i = 0; i < 10; ++i) {
@@ -61,23 +64,23 @@ bool Board::placeMark(int x, int y, char mark) {
         return true;
     }
     return false;
-}
+} // Hàm gán nước đi lên bảng 
 
 bool Board::checkWin(char mark) const {
     for (int i = 0; i < 10; ++i) {
         for (int j = 0; j < 10; ++j) {
             if (grid[i][j] == mark) {
                 if (j <= 6 && grid[i][j + 1] == mark && grid[i][j + 2] == mark && grid[i][j + 3] == mark) {
-                    return true; // check ngang 
+                    return true;  /// check theo hàng 
                 }
                 if (i <= 6 && grid[i + 1][j] == mark && grid[i + 2][j] == mark && grid[i + 3][j] == mark) {
-                    return true; // check dọc
+                    return true; // check theo đường dọc 
                 }
                 if (i <= 6 && j <= 6 && grid[i + 1][j + 1] == mark && grid[i + 2][j + 2] == mark && grid[i + 3][j + 3] == mark) {
-                    return true; //check chéo
+                    return true; // check chéo 
                 }
                 if (i >= 3 && j <= 6 && grid[i - 1][j + 1] == mark && grid[i - 2][j + 2] == mark && grid[i - 3][j + 3] == mark) {
-                    return true;// 
+                    return true; // check chéo 
                 }
             }
         }

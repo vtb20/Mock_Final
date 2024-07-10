@@ -1,15 +1,18 @@
-#include <iostream>
+﻿#include <iostream>
 #include <string>
 #include <vector>
-#include <algorithm>
 #include "Game.h"
+#include "PlayerManager.h"
+#include "Utils.h"
 
 using namespace std;
 
-static bool isDigit(const string& s) {
-    return all_of(s.begin(), s.end(), ::isdigit);
-}
 
+static void gameOverDisplay() {
+    cout << "GAME OVER! " << endl;
+    cout << "1.PLAY AGAIN." << endl;
+    cout << "2.BACK TO MAIN MENU. \n";
+}
 
 static void showReplayMenu() {
     cout << "*--------REPLAY MENU--------*\n";
@@ -38,13 +41,7 @@ static void showSubMenuWBot() {
     cout << "3. Hard Mode\n";
     cout << "4. Back to MAIN MENU\n";
 }
-static void showSubMenuReplay() {
-    cout << "*--------Replay--------*\n";
-    cout << "Press number to choice:\n";
-    cout << "1. Replay the old match\n";
-    cout << "2. Watching Replay Game\n";
-    cout << "3. Back to MAIN MENU\n";
-}
+
 static void displayGuide() {
     cout << "Welcome to the Caro Game Guide!\n\n";
     cout << "Rules of the Game:\n";
@@ -52,15 +49,14 @@ static void displayGuide() {
     cout << "2. Two players take turns to place their marks (X or O) on the board.\n";
     cout << "3. The objective is to align 5 of your marks in a row horizontally, vertically, or diagonally before your opponent does.\n";
     cout << "4. The game ends when one player aligns 5 marks in a row or when the board is full, resulting in a draw.\n\n";
-
     cout << "Game Controls:\n";
     cout << "1. At the start, each player will be prompted to enter their name.\n";
     cout << "2. Players will take turns to enter the coordinates of their move (row and column).\n";
     cout << "3. The game will indicate invalid moves, such as placing a mark outside the board or on an occupied cell.\n";
     cout << "4. To make a move, enter the row and column numbers separated by a space (e.g., '3 4' to place a mark on the cell at row 3, column 4).\n";
     cout << "5. Players can quit the game at any time by entering 'quit'.\n\n";
-
     cout << "Enjoy the game and good luck!\n";
+    cout << "Press enter to back main menu.";
 }
 
 int main() {
@@ -70,6 +66,7 @@ int main() {
     while (!exit) {
         system("cls");
         showMainMenu();
+        bool backToMain = false;
         cin >> input1;
         while (!isDigit(input1) || stoi(input1) < 1 || stoi(input1) > 6) {
             cout << "Wrong input! please try again: " << endl;
@@ -80,16 +77,17 @@ int main() {
         case 1: {
             system("cls");
             cout << "Your choice is play with other player!\n";
-            cout << "Or You can enter exit in the name input to back \n"; 
+            cout << "Or You can enter exit in the name input to back \n";
             string name1, name2;
             cout << "Enter name for Player 1 (X): ";
-            cin >> name1;
+            cin.ignore();
+            getline(cin, name1);
             if (name1 == "exit")
             {
                 break;
             }
             cout << "Enter name for Player 2 (O): ";
-            cin >> name2;
+            getline(cin, name2);
             if (name2 == "exit")
             {
                 break;
@@ -99,6 +97,17 @@ int main() {
 
             Game game(player1, player2);
             game.playWithOtherPlayer();
+            gameOverDisplay();
+            int gameOver;
+            cin >> gameOver;
+            if (gameOver == 1)
+            {
+                game.PlayAgain();
+            }
+            if (gameOver == 2)
+            {
+                break;
+            }
             cin.ignore();
             cin.get();
             break;
@@ -126,7 +135,7 @@ int main() {
                     getline(cin, playerName);
                     Player player1(playerName, 'X');
                     Board board;
-                    Bot bot("Easy Bot", 'O', 1, board);  
+                    Bot bot("Easy Bot", 'O', 1, board);
 
                     Game game(player1, bot);
                     game.playVsBot();
@@ -144,7 +153,7 @@ int main() {
                     getline(cin, playerName);
                     Player player1(playerName, 'X');
                     Board board;
-                    Bot bot("Easy Bot", 'O', 2, board);
+                    Bot bot("Normal Bot", 'O', 2, board);
 
                     Game game(player1, bot);
                     game.playVsBot();
@@ -162,7 +171,7 @@ int main() {
                     getline(cin, playerName);
                     Player player1(playerName, 'X');
                     Board board;
-                    Bot bot("Easy Bot", 'O', 3, board);
+                    Bot bot("Hard Bot", 'O', 3, board);
 
                     Game game(player1, bot);
                     game.playVsBot();
@@ -181,46 +190,61 @@ int main() {
             break;
         }
         case 3: {
-            system("cls");
-            bool backToMain = false;
-            string input3;
-            while (!backToMain)
-            {
+            while (!backToMain) {
                 system("cls");
                 showReplayMenu();
+                string input3;
                 cin >> input3;
-                while (!isDigit(input3) || stoi(input3) < 1 || stoi(input3) > 3) {
+
+                // Kiểm tra đầu vào hợp lệ
+                if (!isDigit(input3) || stoi(input3) < 1 || stoi(input3) > 3) {
                     cout << "Wrong input! please try again: " << endl;
-                    cin >> input3;
+                    continue;
                 }
-                switch (stoi(input3))
-                {
+
+                int choice = stoi(input3);
+                system("cls");
+                Game game;
+
+                switch (choice) {
                 case 1:
-                    system("cls"); 
-                     Game::playReplay();      
-                     break;
+                    game.playReplay();
+                    break;
                 case 2:
-                    system("cls");
-                    Game::viewReplay();
+                    game.viewReplay();
                     break;
                 case 3:
                     backToMain = true;
+                    break;
                 default:
                     break;
                 }
             }
             break;
         }
-        case 4:
+        case 4: {
             system("cls");
-            cout << "Sreaching player's information.\n";
-            // Show thông tin player theo tên     
-            cin.ignore();
-            cin.get();
+            cout << "Searching player's information.\n";
+            while (!backToMain) {
+                string nameSearching;
+                cout << "Enter your name player (or type 'exit' to go back Main menu): ";
+                if (cin.peek() == '\n') {
+                    cin.ignore();
+                }
+                getline(cin, nameSearching);
+                if (nameSearching == "exit") {
+                    backToMain = true;
+                }
+                else {
+                    PlayerManager::getInstance().displayPlayerInfoAndSimilarPlayers(nameSearching);
+                }
+            }
             break;
+        }
+
+
         case 5:
             system("cls");
-            // Show guide hướng dẫn 
             displayGuide();
             cin.ignore();
             cin.get();

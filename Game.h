@@ -1,4 +1,4 @@
-#ifndef GAME_H
+﻿#ifndef GAME_H
 #define GAME_H
 
 #include <iostream>
@@ -6,6 +6,8 @@
 #include "Player.h"
 #include "Bot.h"
 #include "Replay.h"
+#include "PlayerManager.h"
+
 using namespace std;
 
 class Game {
@@ -17,17 +19,15 @@ private:
     Replay replay;
 
 public:
+    Game();
     Game(const Player& player1, const Player& player2);
     Game(const Player& player1, const Bot& bot);
     void playWithOtherPlayer();
     void playVsBot();
-    static void playReplay();
-    static void viewReplay();
-    void saveReplay() ;
+    void PlayAgain();
+    void playReplay();
+    void viewReplay();
     void loadReplay(const string& filename);
-    static vector<string> getReplayList();
-    static pair<string, string> getPlayerNamesFromReplayFile(const string& filename);
-
 };
 
 #endif // GAME_H

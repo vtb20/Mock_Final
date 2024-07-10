@@ -12,7 +12,6 @@ using namespace std;
 
 class Game {
 private:
-    Board board;
     Player* p1;
     Player* p2;
     int turn;

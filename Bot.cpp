@@ -1,9 +1,10 @@
 ﻿#include "Bot.h"
+#include <vector>
 #include <cstdlib>
 #include <ctime>
 
-Bot::Bot(const std::string& name, char mark, int level, Board& board)
-    : Player(name, mark), level(level), board(board) {
+Bot::Bot(const std::string& name, char mark, int level)
+    : Player(name, mark), level(level) {
     srand(static_cast<unsigned>(time(0)));  // Seed for random moves
 }
 
@@ -44,43 +45,60 @@ int Bot::calculateValue(char board[10][10], int x, int y) {
 
 pair<int, int> Bot::easyMove() {
     int x, y;
-    do {
+    x = rand() % 10;
+    y = rand() % 10;
+    while (Board::getInstance()->checkValidMove(x, y, mark) == false); {
         x = rand() % 10;
         y = rand() % 10;
-    } while (board.placeMark(x, y, mark) == false); // Ensure the move is valid
+    }
     return make_pair(x, y);
 }
 
 
 pair<int, int> Bot::normalMove() {
     // Simple strategy: try to win, then block, then random move
-    // Try to win
+    //return make_pair(1, 1);
+    // Block opponent
+    //char opponentMark = (mark == 'X') ? 'O' : 'X';
+    char opponentMark = 'X';
+
     for (int i = 0; i < 10; ++i) {
         for (int j = 0; j < 10; ++j) {
-            if (board.placeMark(i, j, mark)) {
-                if (board.checkWin(mark)) {
+            if (Board::getInstance()->checkValidMove(i, j, mark)) {
+                Board::getInstance()->placeMark(i, j, mark);
+                if (Board::getInstance()->checkWin(mark)) {
+                    Board::getInstance()->placeMark(i, j, ' ');
+                    return make_pair(i, j);
+                }
+                if (Board::getInstance()->checkPotentialWin(mark)) {
+                    Board::getInstance()->placeMark(i, j, ' ');
                     return make_pair(i, j);
                 }
                 else {
-                    board.placeMark(i, j, ' '); // Reset the mark
+                    Board::getInstance()->placeMark(i, j, ' '); // Reset the mark
                 }
             }
         }
     }
 
-    // Block opponent
-    char opponentMark = (mark == 'X') ? 'O' : 'X';
     for (int i = 0; i < 10; ++i) {
         for (int j = 0; j < 10; ++j) {
-            if (board.placeMark(i, j, opponentMark)) {
-                if (board.checkWin(opponentMark)) {
-                    board.placeMark(i, j, mark);
+            int win = 0;
+            if (Board::getInstance()->checkValidMove(i, j, opponentMark)) {
+                Board::getInstance()->placeMark(i, j, opponentMark);
+                if (Board::getInstance()->checkPotentialWin(opponentMark)) {
+                    Board::getInstance()->placeMark(i, j, ' ');
+                    return make_pair(i, j);
+                }
+                else if (Board::getInstance()->checkWin(opponentMark)) {
+                    Board::getInstance()->placeMark(i, j, ' ');
                     return make_pair(i, j);
                 }
                 else {
-                    board.placeMark(i, j, ' '); // Reset the mark
+                    Board::getInstance()->placeMark(i, j, ' '); // Reset the mark
                 }
             }
+
         }
     }
 
@@ -98,28 +116,35 @@ pair<int, int> Bot::hardMove() {
     int currentValue = 0;
     int x, y;
 
-    // Block opponent
-    char opponentMark = (mark == 'X') ? 'O' : 'X';
-    for (int i = 0; i < 10; ++i) {
-        for (int j = 0; j < 10; ++j) {
-            if (board.placeMark(i, j, opponentMark)) {
-                if (board.checkWin(opponentMark)) {
-                    board.placeMark(i, j, mark);
-                    return make_pair(i, j);
-                }
-                else {
-                    board.placeMark(i, j, ' '); // Reset the mark
-                }
-            }
-        }
-    }
+    char opponentMark = 'X';
+
+    //for (int i = 0; i < 10; ++i) {
+    //    for (int j = 0; j < 10; ++j) {
+    //        int win = 0;
+    //        if (Board::getInstance()->checkValidMove(i, j, opponentMark)) {
+    //            Board::getInstance()->placeMark(i, j, opponentMark);
+    //            if (Board::getInstance()->checkPotentialWin(opponentMark)) {
+    //                Board::getInstance()->placeMark(i, j, ' ');
+    //                return make_pair(i, j);
+    //            }
+    //            else if (Board::getInstance()->checkWin(opponentMark)) {
+    //                Board::getInstance()->placeMark(i, j, ' ');
+    //                return make_pair(i, j);
+    //            }
+    //            else {
+    //                Board::getInstance()->placeMark(i, j, ' '); // Reset the mark
+    //            }
+    //        }
+
+    //    }
+    //}
 
     //calculate for best move
     vector<pair<int, int>> pointToCheck;
     for (int i = 0; i < boardWidth; i++) {
         for (int j = 0; j < boardHeight; j++) {
             for (int k = 0; k < 8; k++) {
-                if (board.grid[i + dx[k]][j + dy[k]] == ' ') {
+                if (Board::getInstance()->grid[i + dx[k]][j + dy[k]] == ' ' && isIn(pointToCheck, make_pair(i, j))) {
                     pointToCheck.push_back(make_pair(i, j));
                 }
             }
@@ -127,13 +152,16 @@ pair<int, int> Bot::hardMove() {
     }
 
     for (int i = 0; i < pointToCheck.size(); i++) {
-        if (calculateValue(board.grid, pointToCheck[i].first, pointToCheck[i].second) > currentValue) {
-            currentValue = calculateValue(board.grid, pointToCheck[i].first, pointToCheck[i].second);
+        if (calculateValue(Board::getInstance()->grid, pointToCheck[i].first, pointToCheck[i].second) > currentValue) {
+            currentValue = calculateValue(Board::getInstance()->grid, pointToCheck[i].first, pointToCheck[i].second);
             x = pointToCheck[i].first;
             y = pointToCheck[i].second;
         }
     }
 
+    if (pointToCheck.size() == 0) {
+        return normalMove();
+    }
     return make_pair(x, y);
 }
 

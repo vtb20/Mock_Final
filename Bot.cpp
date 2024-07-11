@@ -1,7 +1,4 @@
 ﻿#include "Bot.h"
-#include <vector>
-#include <cstdlib>
-#include <ctime>
 
 Bot::Bot(const std::string& name, char mark, int level)
     : Player(name, mark), level(level) {
@@ -68,11 +65,11 @@ pair<int, int> Bot::normalMove() {
             int win = 0;
             if (Board::getInstance()->checkValidMove(i, j, opponentMark)) {
                 Board::getInstance()->placeMark(i, j, opponentMark);
-                if (Board::getInstance()->checkPotentialWin(opponentMark)) {
+                if (Board::getInstance()->checkWin(opponentMark)) {
                     Board::getInstance()->placeMark(i, j, ' ');
                     return make_pair(i, j);
                 }
-                else if (Board::getInstance()->checkWin(opponentMark)) {
+                else if (Board::getInstance()->checkPotentialWin(opponentMark)) {
                     Board::getInstance()->placeMark(i, j, ' ');
                     return make_pair(i, j);
                 }

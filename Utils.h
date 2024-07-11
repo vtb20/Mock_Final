@@ -5,6 +5,13 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <windows.h>
+#include <stack>
+#include <cstdlib>
+#include <ctime>
+#include <memory> 
+#include <fstream>
+#include <sstream>
 using namespace std;
 
 bool isDigit(const std::string& s);

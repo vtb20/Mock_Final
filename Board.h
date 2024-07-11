@@ -1,8 +1,7 @@
 ﻿#ifndef BOARD_H
 #define BOARD_H
-#include <iostream>
-#include <Windows.h>
-using namespace std;
+
+#include "Utils.h"
 
 class Board {
 private:

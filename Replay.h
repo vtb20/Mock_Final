@@ -1,13 +1,7 @@
 ﻿#ifndef REPLAY_H
 #define REPLAY_H
 
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <string>
-#include <ctime>
-
-using namespace std;
+#include "Utils.h"
 
 class Replay {
 private:

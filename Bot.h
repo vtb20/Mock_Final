@@ -4,7 +4,6 @@
 #include "Player.h"
 #include "Board.h"
 #include "Utils.h"
-#include <stack>
 
 class Bot : public Player {
 private:

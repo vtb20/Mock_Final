@@ -47,7 +47,7 @@ pair<int, int> Bot::easyMove() {
     int x, y;
     x = rand() % 10;
     y = rand() % 10;
-    while (Board::getInstance()->checkValidMove(x, y, mark) == false); {
+    while (Board::getInstance()->checkValidMove(x, y, mark) == false) {
         x = rand() % 10;
         y = rand() % 10;
     }
@@ -62,24 +62,6 @@ pair<int, int> Bot::normalMove() {
     //char opponentMark = (mark == 'X') ? 'O' : 'X';
     char opponentMark = 'X';
 
-    for (int i = 0; i < 10; ++i) {
-        for (int j = 0; j < 10; ++j) {
-            if (Board::getInstance()->checkValidMove(i, j, mark)) {
-                Board::getInstance()->placeMark(i, j, mark);
-                if (Board::getInstance()->checkWin(mark)) {
-                    Board::getInstance()->placeMark(i, j, ' ');
-                    return make_pair(i, j);
-                }
-                if (Board::getInstance()->checkPotentialWin(mark)) {
-                    Board::getInstance()->placeMark(i, j, ' ');
-                    return make_pair(i, j);
-                }
-                else {
-                    Board::getInstance()->placeMark(i, j, ' '); // Reset the mark
-                }
-            }
-        }
-    }
 
     for (int i = 0; i < 10; ++i) {
         for (int j = 0; j < 10; ++j) {
@@ -101,6 +83,7 @@ pair<int, int> Bot::normalMove() {
 
         }
     }
+
 
     // Random move
     return easyMove();

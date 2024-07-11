@@ -59,6 +59,31 @@ static void displayGuide() {
     cout << "Press enter to back main menu.";
 }
 
+void handleGameOver(Game& game) {
+    bool gameOV = false;
+    while (!gameOV) {
+        system("cls");
+        gameOverDisplay();
+        string choiceGV;
+        cin >> choiceGV;
+
+        while (!isDigit(choiceGV) || stoi(choiceGV) < 1 || stoi(choiceGV) > 2) {
+            cout << "Wrong input! please try again: " << endl;
+            cin >> choiceGV;
+        }
+
+        switch (stoi(choiceGV)) {
+        case 1:
+            game.playWithOtherPlayer();
+            break;
+        case 2:
+            gameOV = true;
+            break;
+        default:
+            cout << "Invalid choice, please try again.\n";
+        }
+    }
+}
 int main() {
     bool exit = false;
     string input1;
@@ -97,19 +122,8 @@ int main() {
 
             Game game(player1, player2);
             game.playWithOtherPlayer();
-            gameOverDisplay();
-            int gameOver;
-            cin >> gameOver;
-            if (gameOver == 1)
-            {
-                game.PlayAgain();
-            }
-            if (gameOver == 2)
-            {
-                break;
-            }
-            cin.ignore();
-            cin.get();
+            handleGameOver(game);
+            cin.ignore();       
             break;
         }
         case 2: {
@@ -131,9 +145,8 @@ int main() {
                     system("cls");
                     cout << "You chose Easy Mode.\n";
                     cout << "Enter your name: \n";
-                    string playerName;
-                    getline(cin, playerName);
-                    Player player1(playerName, 'X');
+                    
+                    Player player1("Player", 'X');
                     Bot bot("Easy Bot", 'O', 1);
 
                     Game game(player1, bot);
@@ -148,9 +161,8 @@ int main() {
                     cout << "You chose Normal Mode.\n";
 
                     cout << "Enter your name: \n";
-                    string playerName;
-                    getline(cin, playerName);
-                    Player player1(playerName, 'X');
+          
+                    Player player1("Player", 'X');
                     Bot bot("Normal Bot", 'O', 2);
 
                     Game game(player1, bot);
@@ -165,9 +177,8 @@ int main() {
                     cout << "You chose Hard Mode.\n";
 
                     cout << "Enter your name: \n";
-                    string playerName;
-                    getline(cin, playerName);
-                    Player player1(playerName, 'X');
+
+                    Player player1("Player", 'X');
                     Bot bot("Hard Bot", 'O', 3);
 
                     Game game(player1, bot);

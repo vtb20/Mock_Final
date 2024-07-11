@@ -146,7 +146,7 @@ vector<Player> PlayerManager::getOpponentsWithSimilarSkill(const Player& player)
         WinLossDrawRatio opponentRatio = calculateWinLossDrawRatio(opponent);
 
         // Define your threshold for similarity, e.g., within 10% difference
-        double threshold = 0.3;
+        double threshold = 0.25;
 
         if (fabs(playerRatio.winRatio - opponentRatio.winRatio) <= threshold &&
             fabs(playerRatio.lossRatio - opponentRatio.lossRatio) <= threshold &&

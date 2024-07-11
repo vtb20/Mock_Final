@@ -1,7 +1,7 @@
 ﻿#include "Board.h"
 
 Board::Board() {
-    reset();// khởi tạo một bảng không có ký tự 
+    reset();
 }
 
 Board* Board::getInstance(){
@@ -17,40 +17,49 @@ void Board::reset() {
     }
 }
 
+
 void Board::display() const {
-    system("cls");
-    
+    system("cls"); 
+
     cout << "=> Player 1 = X, Player 2 = O:\n";
     cout << "  ";
-    // In ra các chỉ số cột từ 0 đến 9
+
     for (int i = 0; i < 10; ++i) {
         cout << " " << i;
-
     }
     cout << endl;
-    cout << "  +-+-+-+-+-+-+-+-+-+-+";
-    cout << "\n";
-   
+    cout << "  +-+-+-+-+-+-+-+-+-+-+\n";
+
     for (int i = 0; i < 10; ++i) {
-        cout << i << " " << "|";
+        cout << i << " |";
         for (int j = 0; j < 10; ++j) {
-           cout << grid[i][j] << "|";;
-        }
-        cout << "\n";
-        if (i < 10) {
-            cout << "  ";
-            for (int j = 0; j < 10; ++j) {
-                if (j == 0)
-                {
-                    cout << "+";
-                } 
-                cout << "-+";
+            if (grid[i][j] == ' ') {
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);  
+                cout << grid[i][j] << "|";
             }
-            cout << "\n";
+            else if (grid[i][j] == 'X') {
+
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);  // Màu đỏ
+                cout << grid[i][j];
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);  // Màu đỏ
+                cout << "|";
+            }
+            else {
+                // In ra nước đi của người chơi O mặc định
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);  
+                cout << grid[i][j];
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);  
+                cout << "|";
+            }
         }
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);  // Thiết lập màu sắc mặc định trở lại
+        cout << "\n  ";
+        for (int j = 0; j < 10; ++j) {
+            cout << "+-";
+        }
+        cout << "+\n";
     }
 }
-
 
 bool Board::isFull() const {
     for (int i = 0; i < 10; ++i) {

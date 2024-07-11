@@ -1,4 +1,4 @@
-#include "Player.h"
+﻿#include "Player.h"
 #include <iostream>
 
 // Constructor
@@ -47,8 +47,8 @@ pair<int, int> Player::makeMove() {
         }
         else {
             cout << "Invalid input. Please enter numbers between 0 and 9." << endl;
-            cin.clear(); 
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // discard invalid input
+            cin.clear();  // xóa cờ lỗi của cin  
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // xóa ký tự lỗi khi nhập vào 
         }
     }
     return make_pair(x, y);

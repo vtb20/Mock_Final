@@ -14,8 +14,7 @@ private:
     pair<int, int> easyMove();
     pair<int, int> normalMove();
     pair<int, int> hardMove();
-    bool checkWinNextMove(char mark, int& x, int& y);
-    bool checkBlockOpponent(char mark, int& x, int& y);
+
     int calculateValue(char board[10][10], int x, int y);
 
 public:

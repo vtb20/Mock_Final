@@ -1,6 +1,6 @@
 ﻿#include "Game.h"
 #include "Utils.h"
-
+#include <windows.h>
 
 Game::Game() {
     p1 = nullptr;
@@ -8,25 +8,25 @@ Game::Game() {
     turn = 0;
 };
 
+Game::~Game(){};
+
 Game::Game(const Player& player1, const Player& player2 )
-    : p1(new Player(player1)), p2(new Player(player2)), turn(0) {
-   
+    : p1(make_unique<Player>(player1)), p2(make_unique<Player>(player2)), turn(0) {
         PlayerManager::getInstance().addOrUpdatePlayer(player1);
-        PlayerManager::getInstance().addOrUpdatePlayer(player2);
-    
+        PlayerManager::getInstance().addOrUpdatePlayer(player2); 
 }
 
 Game::Game(const Player& player1, const Bot& bot)
-    : p1(new Player(player1)), p2(new Bot(bot)), turn(0) {
-    PlayerManager::getInstance().addOrUpdatePlayer(player1);
+    : p1(make_unique<Player>(player1)), p2(make_unique<Bot>(bot)), turn(0) {
 }
 
 
 void Game::playVsBot() {
+    Board::getInstance()->reset();
     bool gameOver = false;
     while (!gameOver) {
         Board::getInstance()->display();
-        Player* currentPlayer = (turn % 2 == 0) ? p1 : p2;
+        Player* currentPlayer = (turn % 2 == 0) ? p1.get() : p2.get();
 
         std::cout << currentPlayer->getName() << " turn (" << currentPlayer->getMark() << "): ";
 
@@ -36,7 +36,7 @@ void Game::playVsBot() {
             move = currentPlayer->makeMove();
         }
         Board::getInstance()->placeMark(move.first, move.second, currentPlayer->getMark());
-        
+
         replay.saveMove(move);
 
         if (Board::getInstance()->checkWin(currentPlayer->getMark())) {
@@ -54,28 +54,22 @@ void Game::playVsBot() {
     }
 }
 
-void Game::PlayAgain() {
-    Board::getInstance()->reset();
-    playWithOtherPlayer();
-}
 
 void Game::playWithOtherPlayer() {
     bool gameOver = false;
+    Board::getInstance()->reset();
+    turn = 0;
     while (!gameOver) {
         Board::getInstance()->display();
-        Player* currentPlayer = (turn % 2 == 0) ? p1 : p2;
-        Player* opponent = (currentPlayer == p1) ? p2 : p1;
+        Player* currentPlayer = (turn % 2 == 0) ? p1.get() : p2.get();
+        Player* opponent = (currentPlayer == p1.get()) ? p2.get() : p1.get();
 
         cout << currentPlayer->getName() << " turn (" << currentPlayer->getMark() << "): ";
 
         pair<int, int> move = currentPlayer->makeMove();
-        /*while (!Board::getInstance()->placeMark(move.first, move.second, currentPlayer->getMark())) {
-            cout << "Invalid move. Try again: ";
-            move = currentPlayer->makeMove();
-        }*/
 
         while (!Board::getInstance()->checkValidMove(move.first, move.second, currentPlayer->getMark())) {
-            std::cout << "Invalid move. Try again: ";
+            cout << "Invalid move. Try again: ";
             move = currentPlayer->makeMove();
         }
         Board::getInstance()->placeMark(move.first, move.second, currentPlayer->getMark());
@@ -90,6 +84,8 @@ void Game::playWithOtherPlayer() {
             opponent->addLoss(1);
             PlayerManager::getInstance().addOrUpdatePlayer(*currentPlayer);
             PlayerManager::getInstance().addOrUpdatePlayer(*opponent);
+            cin.ignore();
+            cin.get();
         }
         else if (Board::getInstance()->isFull()) {
             Board::getInstance()->display();
@@ -105,7 +101,6 @@ void Game::playWithOtherPlayer() {
     }
     replay.saveReplay(p1->getName(), p2->getName());
 }
-
 
 
 void Game::playReplay() {
@@ -160,7 +155,7 @@ void Game::playReplay() {
 void Game::viewReplay() {
     vector<string> replays = replay.getReplayList();
     if (replays.empty()) {
-        cout << "No replays available.\n";
+        cout << "No replays available(or type 'exit' to go back).\n";
         cout << "Press enter to back!";
         cin.ignore();
         cin.get();
@@ -220,11 +215,10 @@ void Game::loadReplay(const string& filename) {
         cout << ((turn % 2 == 0) ? p1->getName() : p2->getName()) << " (" << mark << ") moved to (" << move.first << ", " << move.second << ")\n";
         if (Board::getInstance()->checkWin(mark)) {
             cout << ((turn % 2 == 0) ? p1->getName() : p2->getName()) << " wins!\n";
-            cout << "Press enter to return Replay Menu";
+            Sleep(2000);
             break;
         }
-        cout << "Press enter to continue...";
-        cin.get();
+        Sleep(2000);
         turn++;
     }
 }
